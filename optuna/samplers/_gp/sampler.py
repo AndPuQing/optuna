@@ -187,7 +187,7 @@ class GPSampler(BaseSampler):
         self._kernel_params_cache = kernel_params
 
         acqf_params = acqf.create_acqf_params(
-            acqf_type=acqf.AcquisitionFunctionType.LOG_EI,
+            acqf_type=acqf.AcquisitionFunctionType.Custom,
             kernel_params=kernel_params,
             search_space=internal_search_space,
             X=normalized_params,

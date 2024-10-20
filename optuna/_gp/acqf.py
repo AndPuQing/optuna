@@ -6,7 +6,8 @@ import math
 from typing import TYPE_CHECKING
 
 import numpy as np
-
+from optuna._gp.gpt_acqf import custom
+from optuna._gp.gpt_acqf_temp import *
 from optuna._gp.gp import kernel
 from optuna._gp.gp import KernelParamsTensor
 from optuna._gp.gp import posterior
@@ -67,6 +68,7 @@ class AcquisitionFunctionType(IntEnum):
     LOG_EI = 0
     UCB = 1
     LCB = 2
+    Custom = 3
 
 
 @dataclass(frozen=True)
@@ -130,6 +132,10 @@ def eval_acqf(acqf_params: AcquisitionFunctionParams, x: torch.Tensor) -> torch.
     elif acqf_params.acqf_type == AcquisitionFunctionType.LCB:
         assert acqf_params.beta is not None, "beta must be given to LCB."
         return lcb(mean=mean, var=var, beta=acqf_params.beta)
+    elif acqf_params.acqf_type == AcquisitionFunctionType.Custom:
+        return custom(
+            mean=mean, var=var + acqf_params.acqf_stabilizing_noise, f0=acqf_params.max_Y
+        )
     else:
         assert False, "Unknown acquisition function type."
 
